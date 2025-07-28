@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Slope Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #231F20;
+            color: white;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            touch-action: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .webgl-content {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #gameContainer {
+            width: 100vw;
+            height: 100vh;
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        #gameContainer canvas {
+            width: 100% !important;
+            height: 100% !important;
+            display: block;
+        }
+
+        /* Progress bar styling */
+        .webgl-content .logo, .progress {
+            position: absolute; 
+            left: 50%; 
+            top: 50%; 
+            -webkit-transform: translate(-50%, -50%); 
+            transform: translate(-50%, -50%);
+        }
+
+        .webgl-content .logo {
+            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJoAAACCCAQAAAAUcxlqAAAFi0lEQVR42u2d7bWkIAyGtwRLsARKoARLsARLoANLsARLsARLsARLYJ3Z2TneczUECOFD4s/1zsx5FpI3JMAf/ac+tk9F4A6tPNNCD3rWWg/AOxXaB0Srez3pTf+3pUK7B9DoTo961b+sQrueiEov+t5khXaeiC+vtWuTjRXaayL+9FomWx8NTctrr2W05oHQ3vJh0e7WPwjaWz5gvJbJpgdA+8iHTVPZVjS0w2spJ69lsrZAaN+kJ5QNBUH7lfSEsrkYaEHH1k/bC4F2OHtOEwVAOyLkxgpNlQBNaV5bsod2BIBdc1uTO7SJwrlbvt9lDe2QsH6w5kPViUOs2NmYN7TFB9Y3kNiOtDVjaNYj5HDiR9gQBIGkzRSaldR4wZI3gYRgiSgfaMoHlmcuMWUJzSA11mNBSAYMJHue0OZbWN3dovTFp0CLRzM4/UWC0A4nv1w+KwUsVCBpQQ04JAcNHRc3F1goqaEMCwFzYtBQyPbjrdbrW0bwP6N5YwUsKWjIUSa8AwlCUoA+TyYDDYmsD5pLLChZoxKBxoYMlhoS9d6aBDQuZMc3bVjhCgaLJjo0RmQDGGAadMbQRYbGiMwoNdC/a4oKjQ+ZSWpYRdktIjRWZK3dmqzB/7WRoHEiw0oN9Mjso0BjRiYd+jQQyRQrNF5khql23xxqXCJihIZENpEhs5Aa6CktWKGxI4OlxuAIWzFC40ZmqJCu4F8KU/BggRYBmcBlm/a+kAkaPzKDX5q9RmnHAC0Ksg4MAa3Xbx6DQ4uBzCA1FCqIgP4wKLRIyJRpYduzbtUEhBYJGSw1kMIZTqaCQYuDzODEF5IETAWChkS2kiMTVOUZYLy2QaBhkblVMJ2lhtWovl3DVUECQURknVu2aZFM/auQUkOLiKzxlRqI5cs+QEYQD5lJapCovSXA0lBUZHAzliSpLghyaOg2lvWmQ8jv2SikBughR/LCikNHLJ+1jj7yJpAQQUsa2UgiYAbitoSkke3uHvQUWlbiVqukkXmVaU75hSSFljgyz0TtE5Fpu7sd+/KzGGenZKojhVb8SFuvJEv1abhUqieGVnD07K8/5Qk6TXl6tF9qr2YE+IVIEaA/rbjcU9x2gRe0yuFRU0cuNYXpT4uKzapR1Gnp/BMOYq3czgGgOfcJWRSMQ3UNxSreGb7ZtkbQ3QeVmNWoENhWqiWi2/rpEqwtIVqpWJLVPe+jcVdehX0mqbC3ESrsEXs5rHcOWLeQysd1DXmP173I/jSKojEslsrshPSUHmA4GZ7Zc2v8JjC3aMvt7vaSHoDa2wJlBB7YFCE25+Y+MP5OjNAi7ItybiMFf2nHCi0CNseGZXCMNszQEtuFpxwaR9cg62lpYXPZhAF27aoo0JLaWTxZT2oZCRrzHnbrjWUA5j1IjSBJbKON9AA3+MxRoSV0Lkdv4QWHyNCSPQFmxFRP61lDCvnmFqDCHhCb9IaGPGrCnEAlAA19Sp8IKj1m1ETukoHGhQ1XfwfrC01C0NDYOs9vUebWP3MClQw0i9YZ44nJPtID3uOZHDTgnNvr026d4JkWwUG5IROE5ujILeHB9XfgXzM9hlpSTFvns7vnLKEhLwoxnxI/OUEbcoVms2MBuo/A5WKbNlNoTndWXMBz+JTfJ0dmBK1xvv7oBM/hsq4pY2gEHeRveNafkvcVSAbREMqyv2xLsiO72F2V3114S/z9LvlB494sKQuAZliSJt+OdvkLMoTWMN68WM71u+96pmLxbiVd9HwquY1BZUhbILTvhA1zV3bZl9d/I+vrVnY6jzc9ANpJAtN4vO5B0L6T1tfjNY+Ddpq0bh7v9niKB0A7yRQ7j6cqNHuPJys0W4+3A3/7VGhGjzdXaPYeb6jQ7DzeqsEDUHyPAqtPhVahJff8BbhPqVERIfSQAAAAAElFTkSuQmCC') no-repeat center / contain; 
+            width: 154px; 
+            height: 130px;
+        }
+
+        .webgl-content .progress {
+            height: 18px; 
+            width: 141px; 
+            margin-top: 90px;
+        }
+
+        .webgl-content .progress .empty {
+            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAI0AAAASCAQAAADMZ5W4AAAAOUlEQVRYw+3YsQkAQAwDMe+/dL4PJPCQUucNVDqloSDYaWJtaNCgQYMGDRo0aNCgQYEGzSWN/DU/Pd/qSl+UowXtAAAAAElFTkSuQmCC') no-repeat right / cover; 
+            float: right; 
+            width: 100%; 
+            height: 100%; 
+            display: inline-block;
+        }
+
+        .webgl-content .progress .full {
+            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAI0AAAASCAAAAABDBQLvAAAAJElEQVR42mP4P5gAw6hrRl0z6ppR14y6ZtQ1o64Zdc2oa2gIAJtx4J4m8q7hAAAAAElFTkSuQmCC') no-repeat left / cover; 
+            float: left; 
+            width: 0%; 
+            height: 100%; 
+            display: inline-block;
+        }
+
+        /* Fullscreen button styling */
+        .fullscreen-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 140px;
+            width: 48px;
+            height: 48px;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiByeD0iOCIgZmlsbD0iIzAwMDAwMCIgZmlsbC1vcGFjaXR5PSIwLjYiLz4KPHBhdGggZD0iTTE0IDE0SDIwVjE2SDE2VjIwSDE0VjE0Wk0yOCAxNEgzNFYyMEgzMlYxNkgyOFYxNFpNMzIgMjhIMzRWMzRIMjhWMzJIMzJWMjhaTTE2IDI4SDIwVjMySDE2VjI4Wk0xNCAyOFYzNEgyMFYzMkgxNlYyOEgxNFoiIGZpbGw9IiNGRkZGRkYiLz4KPHN2Zz4K');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            cursor: pointer;
+            z-index: 2000;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+            pointer-events: auto;
+        }
+
+        .fullscreen-btn:hover {
+            opacity: 1;
+        }
+
+        /* Control buttons - Mobile optimized */
+        .control-btn {
+            position: fixed;
+            bottom: 20px;
+            width: 100px;
+            height: 100px;
+            background-color: rgba(255, 255, 255, 0.5);
+            border: 3px solid rgba(255, 255, 255, 1.0);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: bold;
+            color: #231F20;
+            cursor: pointer;
+            user-select: none;
+            z-index: 2000;
+            transition: all 0.1s ease;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            pointer-events: auto;
+        }
+
+        .control-btn:hover {
+            background-color: rgba(255, 255, 255, 0.7);
+            transform: scale(1.05);
+        }
+
+        .control-btn:active,
+        .control-btn.pressed {
+            background-color: rgba(255, 255, 255, 0.9);
+            transform: scale(0.95);
+        }
+
+        .left-btn {
+            left: 20px;
+        }
+
+        .right-btn {
+            right: 20px;
+        }
+
+        /* Mobile-specific adjustments */
+        @media (max-width: 768px) {
+            .control-btn {
+                width: 80px;
+                height: 80px;
+                font-size: 28px;
+                bottom: 10px;
+            }
+            
+            .left-btn {
+                left: 10px;
+            }
+            
+            .right-btn {
+                right: 10px;
+            }
+            
+            .fullscreen-btn {
+                bottom: 10px;
+                right: 100px;
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .control-btn {
+                width: 70px;
+                height: 70px;
+                font-size: 24px;
+            }
+            
+            .fullscreen-btn {
+                right: 85px;
+                width: 35px;
+                height: 35px;
+            }
+        }
+
+        .error-msg {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 90%;
+            z-index: 9999;
+        }
+
+        /* Invisible screen half overlay buttons */
+        .screen-half-btn {
+            position: fixed;
+            top: 0;
+            width: 50vw;
+            height: 100vh;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            z-index: 1500;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .screen-half-btn.active {
+            pointer-events: auto;
+        }
+
+        .screen-half-left {
+            left: 0;
+        }
+
+        .screen-half-right {
+            right: 0;
+        }
+    </style>
+    <script src="TemplateData/UnityProgress.js"></script>
+    <script src="TemplateData/unityloader41.js"></script>
+    <script>
+        // Mobile-optimized control functionality
+        var isLeftPressed = false;
+        var isRightPressed = false;
+        
+        function simulateKeyPress(keyCode) {
+            var event = new KeyboardEvent('keydown', {
+                key: keyCode === 65 ? 'a' : 'd',
+                keyCode: keyCode,
+                which: keyCode,
+                bubbles: true,
+                cancelable: true
+            });
+            document.dispatchEvent(event);
+        }
+        
+        function simulateKeyRelease(keyCode) {
+            var event = new KeyboardEvent('keyup', {
+                key: keyCode === 65 ? 'a' : 'd',
+                keyCode: keyCode,
+                which: keyCode,
+                bubbles: true,
+                cancelable: true
+            });
+            document.dispatchEvent(event);
+        }
+
+        // Enhanced mobile touch handling
+        function handleButtonPress(button, keyCode, isPressed) {
+            if (keyCode === 65) { // Left button
+                if (isPressed && !isLeftPressed) {
+                    isLeftPressed = true;
+                    button.classList.add('pressed');
+                    simulateKeyPress(keyCode);
+                } else if (!isPressed && isLeftPressed) {
+                    isLeftPressed = false;
+                    button.classList.remove('pressed');
+                    simulateKeyRelease(keyCode);
+                }
+            } else { // Right button
+                if (isPressed && !isRightPressed) {
+                    isRightPressed = true;
+                    button.classList.add('pressed');
+                    simulateKeyPress(keyCode);
+                } else if (!isPressed && isRightPressed) {
+                    isRightPressed = false;
+                    button.classList.remove('pressed');
+                    simulateKeyRelease(keyCode);
+                }
+            }
+        }
+
+        // Screen half controls for mobile
+        var useScreenHalves = false;
+        var screenLeftPressed = false;
+        var screenRightPressed = false;
+        
+        function handleLeftHalfTouch(isPressed) {
+            if (isPressed && !screenLeftPressed) {
+                screenLeftPressed = true;
+                simulateKeyPress(65); // A key
+            } else if (!isPressed && screenLeftPressed) {
+                screenLeftPressed = false;
+                simulateKeyRelease(65);
+            }
+        }
+        
+        function handleRightHalfTouch(isPressed) {
+            if (isPressed && !screenRightPressed) {
+                screenRightPressed = true;
+                simulateKeyPress(68); // D key
+            } else if (!isPressed && screenRightPressed) {
+                screenRightPressed = false;
+                simulateKeyRelease(68);
+            }
+        }
+        
+        function toggleScreenHalves() {
+            useScreenHalves = !useScreenHalves;
+            
+            var leftHalfBtn = document.getElementById('leftHalfBtn');
+            var rightHalfBtn = document.getElementById('rightHalfBtn');
+            
+            if (useScreenHalves) {
+                leftHalfBtn.classList.add('active');
+                rightHalfBtn.classList.add('active');
+            } else {
+                leftHalfBtn.classList.remove('active');
+                rightHalfBtn.classList.remove('active');
+                
+                // Release any active screen touches
+                if (screenLeftPressed) {
+                    screenLeftPressed = false;
+                    simulateKeyRelease(65);
+                }
+                if (screenRightPressed) {
+                    screenRightPressed = false;
+                    simulateKeyRelease(68);
+                }
+            }
+        }
+
+        // Enhanced resize function for mobile compatibility
+        function resizeGame() {
+            var container = document.getElementById("gameContainer");
+            var canvas = container.querySelector("canvas");
+            if (canvas) {
+                canvas.style.width = "100vw";
+                canvas.style.height = "100vh";
+                
+                // Handle mobile viewport changes (keyboard appearance, etc.)
+                if (window.visualViewport) {
+                    canvas.style.height = window.visualViewport.height + "px";
+                }
+            }
+        }
+
+        // Handle mobile viewport changes
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', resizeGame);
+        }
+
+        // Prevent mobile browser zoom
+        document.addEventListener('gesturestart', function(e) {
+            e.preventDefault();
+        });
+        
+        document.addEventListener('gesturechange', function(e) {
+            e.preventDefault();
+        });
+        
+        document.addEventListener('gestureend', function(e) {
+            e.preventDefault();
+        });
+
+        // Initialize game with mobile compatibility settings
+        var gameInstance = UnityLoader.instantiate("gameContainer", "Build/slope.json", { 
+            onProgress: UnityProgress,
+            Module: { 
+                onRuntimeInitialized: function() { 
+                    UnityProgress(gameInstance, "complete");
+                    resizeGame();
+                    
+                    // Hide Unity mobile warning if it appears
+                    setTimeout(function() {
+                        var unityWarnings = document.querySelectorAll('[style*="position: absolute"], [style*="position:absolute"]');
+                        unityWarnings.forEach(function(warning) {
+                            if (warning.textContent && warning.textContent.includes('mobile')) {
+                                warning.style.display = 'none';
+                            }
+                        });
+                    }, 2000);
+                } 
+            },
+            compatibilityCheck: function(unityInstance, onsuccess, onerror) {
+                // Always succeed to bypass Unity's mobile compatibility check
+                onsuccess();
+            }
+        });
+        
+        window.addEventListener('resize', resizeGame);
+        window.addEventListener('load', resizeGame);
+
+        // Setup enhanced mobile control buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            var leftBtn = document.getElementById('leftBtn');
+            var rightBtn = document.getElementById('rightBtn');
+            
+            if (leftBtn) {
+                // Mouse events
+                leftBtn.addEventListener('mousedown', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleButtonPress(leftBtn, 65, true);
+                });
+                leftBtn.addEventListener('mouseup', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleButtonPress(leftBtn, 65, false);
+                });
+                leftBtn.addEventListener('mouseleave', function(e) {
+                    handleButtonPress(leftBtn, 65, false);
+                });
+                
+                // Touch events
+                leftBtn.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleButtonPress(leftBtn, 65, true);
+                });
+                leftBtn.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleButtonPress(leftBtn, 65, false);
+                });
+                leftBtn.addEventListener('touchcancel', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleButtonPress(leftBtn, 65, false);
+                });
+            }
+            
+            if (rightBtn) {
+                // Mouse events
+                rightBtn.addEventListener('mousedown', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleButtonPress(rightBtn, 68, true);
+                });
+                rightBtn.addEventListener('mouseup', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleButtonPress(rightBtn, 68, false);
+                });
+                rightBtn.addEventListener('mouseleave', function(e) {
+                    handleButtonPress(rightBtn, 68, false);
+                });
+                
+                // Touch events
+                rightBtn.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleButtonPress(rightBtn, 68, true);
+                });
+                rightBtn.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleButtonPress(rightBtn, 68, false);
+                });
+                rightBtn.addEventListener('touchcancel', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleButtonPress(rightBtn, 68, false);
+                });
+            }
+
+            // Create invisible screen half overlay buttons
+            var leftHalfBtn = document.createElement('div');
+            leftHalfBtn.id = 'leftHalfBtn';
+            leftHalfBtn.className = 'screen-half-btn screen-half-left';
+            
+            var rightHalfBtn = document.createElement('div');
+            rightHalfBtn.id = 'rightHalfBtn';
+            rightHalfBtn.className = 'screen-half-btn screen-half-right';
+            
+            // Add event listeners to invisible buttons
+            // Left half button events
+            leftHalfBtn.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                handleLeftHalfTouch(true);
+            });
+            leftHalfBtn.addEventListener('mouseup', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                handleLeftHalfTouch(false);
+            });
+            leftHalfBtn.addEventListener('mouseleave', function(e) {
+                handleLeftHalfTouch(false);
+            });
+            leftHalfBtn.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                handleLeftHalfTouch(true);
+            });
+            leftHalfBtn.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                handleLeftHalfTouch(false);
+            });
+            leftHalfBtn.addEventListener('touchcancel', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                handleLeftHalfTouch(false);
+            });
+            
+            // Right half button events
+            rightHalfBtn.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                handleRightHalfTouch(true);
+            });
+            rightHalfBtn.addEventListener('mouseup', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                handleRightHalfTouch(false);
+            });
+            rightHalfBtn.addEventListener('mouseleave', function(e) {
+                handleRightHalfTouch(false);
+            });
+            rightHalfBtn.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                handleRightHalfTouch(true);
+            });
+            rightHalfBtn.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                handleRightHalfTouch(false);
+            });
+            rightHalfBtn.addEventListener('touchcancel', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                handleRightHalfTouch(false);
+            });
+            
+            // Add invisible buttons to page
+            document.body.appendChild(leftHalfBtn);
+            document.body.appendChild(rightHalfBtn);
+            
+            // Add screen halves toggle button
+            var toggleBtn = document.createElement('div');
+            toggleBtn.innerHTML = '🌗';
+            toggleBtn.style.cssText = 'position: fixed; top: 20px; right: 20px; width: 40px; height: 40px; background: rgba(255,255,255,0.5); border: 2px solid rgba(255,255,255,1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; z-index: 2001; transition: all 0.3s ease; pointer-events: auto;';
+            toggleBtn.title = 'Toggle screen half controls';
+            toggleBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleScreenHalves();
+                toggleBtn.style.background = useScreenHalves ? 'rgba(0,255,0,0.5)' : 'rgba(255,255,255,0.5)';
+            });
+            document.body.appendChild(toggleBtn);
+        });
+    </script>
+</head>
+
+<body style="margin: 0; overflow: hidden; background: #231F20;">
+    <div class="webgl-content">
+        <div id="gameContainer"></div>
+        <div class="fullscreen-btn" onclick="gameInstance && gameInstance.SetFullscreen(1)"></div>
+        <div class="control-btn left-btn" id="leftBtn">A</div>
+        <div class="control-btn right-btn" id="rightBtn">D</div>
+        <div id="errorMsg" class="error-msg" style="display: none;"></div>
+    </div>
+
+    <!-- 
+    MOBILE-COMPATIBLE SLOPE GAME HTML FILE
+    
+    This file contains all the necessary HTML, CSS, and JavaScript to run the Slope Game
+    with full mobile compatibility and touch controls.
+    
+    REQUIREMENTS:
+    - This HTML file must be placed in the same directory as the "Build" folder
+    - The Build folder should contain: slope_data.unityweb, slope_wasmcode.unityweb, slope_wasmframework.unityweb
+    
+    MOBILE FEATURES:
+    ✓ Responsive design that adapts to any screen size
+    ✓ Enhanced touch controls (A/D buttons) optimized for mobile
+    ✓ Screen half controls (optional) - left half = left, right half = right
+    ✓ Mobile-specific viewport handling
+    ✓ Prevention of unwanted zoom/gestures
+    ✓ Visual feedback for touch interactions
+    ✓ Optimized button sizes for different screen sizes
+    ✓ PWA-ready meta tags for mobile browsers
+    ✓ Handles mobile keyboard appearance/disappearance
+    
+    DESKTOP FEATURES:
+    ✓ Keyboard controls (A/D or Arrow keys)
+    ✓ Mouse controls on touch buttons
+    ✓ Fullscreen support
+    ✓ Clean interface with no ads or external dependencies
+    
+    MOBILE USAGE:
+    1. Place this HTML file alongside the Build folder
+    2. Open in any mobile browser (Chrome, Safari, Firefox, etc.)
+    3. Use the A/D buttons on screen to control the ball
+    4. Optional: Tap the 🌗 button (top-right) to enable screen half controls
+    5. Tap fullscreen button for immersive gameplay
+    
+    DESKTOP USAGE:
+    1. Place this HTML file alongside the Build folder
+    2. Open in any modern web browser
+    3. Use A/D keys, Arrow keys, or click the on-screen buttons
+    4. Click fullscreen button for immersive gameplay
+    
+    SCREEN HALF CONTROLS:
+    - Touch the left half of the screen to move left
+    - Touch the right half of the screen to move right
+    - Toggle on/off with the 🌗 button in the top-right corner
+    - Works independently from the A/D buttons
+    -->
+</body>
+</html>
