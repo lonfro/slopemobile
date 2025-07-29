@@ -50,21 +50,18 @@ function touchHandler(event) {
 
 }
 
-window.addEventListener('touchstart', (event) => {
+
+gameElement.addEventListener('touchmove', (event) => {
     touchHandler(event);  
 }, true);
 
-window.addEventListener('touchmove', (event) => {
-    touchHandler(event);  
-}, true);
-
-window.addEventListener('touchend', (event) => {
+gameElement.addEventListener('touchend', (event) => {
     touchHandler(event);  
 }, true);
 
 gameElement.addEventListener('touchstart', (event) => {
 
-
+    touchHandler(event);  
     for (const touch of event.changedTouches) {
 
         
