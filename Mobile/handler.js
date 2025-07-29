@@ -71,7 +71,7 @@ function clickFirstButtonInGameContainer() {
 gameElement.addEventListener('touchstart', (event) => {
 
         
-    clickFirstButtonInWebGLContent();
+    clickFirstButtonInGameContainer();
     touchHandler(event);  
     for (const touch of event.changedTouches) {
 
