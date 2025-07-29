@@ -59,19 +59,29 @@ gameElement.addEventListener('touchend', (event) => {
     touchHandler(event);  
 }, true);
 
-function clickFirstButtonInGameContainer() {
+function closeWarning() {
     const gameDiv = document.getElementById('gameContainer');
     if (!gameDiv) return;
     const button = gameDiv.querySelector('button');
     if (button) {
         button.click();
+        return true;
     }
+    return false;
 }
+
+gameElement.addEventListener('DOMContentLoaded', () => {
+    const interval = setInterval(() => {
+        if (closeWarning()) {
+            clearInterval(interval); // Stop once clicked
+        }
+    }, 500);
+});
 
 gameElement.addEventListener('touchstart', (event) => {
 
         
-    clickFirstButtonInGameContainer();
+    
     touchHandler(event);  
     for (const touch of event.changedTouches) {
 
