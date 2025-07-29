@@ -60,23 +60,14 @@ gameElement.addEventListener('touchend', (event) => {
 }, true);
 
 gameElement.addEventListener('touchstart', (event) => {
-
-    touchHandler(event);  
-    for (const touch of event.changedTouches) {
-
+    if (event.target === gameElement) {
+            
         
-        const simulatedEvent = new MouseEvent('mousedown', {
-            bubbles: true,
-            cancelable: true,
-            view: window,
-            clientX: touch.clientX,
-            clientY: touch.clientY,
-            button: 0
-        });
-
-        touch.target.dispatchEvent(simulatedEvent);
+        touchHandler(event);  
         for (const touch of event.changedTouches) {
-            const simulatedEvent = new MouseEvent('mouseup', {
+
+            
+            const simulatedEvent = new MouseEvent('mousedown', {
                 bubbles: true,
                 cancelable: true,
                 view: window,
@@ -84,17 +75,29 @@ gameElement.addEventListener('touchstart', (event) => {
                 clientY: touch.clientY,
                 button: 0
             });
-        
-            touch.target.dispatchEvent(simulatedEvent);        
-        }
-        // Calculate X relative to the container's left edge
-        
 
+            touch.target.dispatchEvent(simulatedEvent);
+            for (const touch of event.changedTouches) {
+                const simulatedEvent = new MouseEvent('mouseup', {
+                    bubbles: true,
+                    cancelable: true,
+                    view: window,
+                    clientX: touch.clientX,
+                    clientY: touch.clientY,
+                    button: 0
+                });
+            
+                touch.target.dispatchEvent(simulatedEvent);        
+            }
+            // Calculate X relative to the container's left edge
+            
+
+        }
+        
+        
+        event.preventDefault();
+        event.stopImmediatePropagation();
     }
-    
-    
-    event.preventDefault();
-    event.stopImmediatePropagation();
 
     
 }, true);
