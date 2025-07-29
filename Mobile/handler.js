@@ -70,7 +70,7 @@ function closeWarning() {
     return false;
 }
 
-gameElement.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', () => {
     const interval = setInterval(() => {
         if (closeWarning()) {
             clearInterval(interval); // Stop once clicked
