@@ -71,6 +71,14 @@ function closeWarning() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+    const popup = document.getElementById('popup');
+    popup.classList.remove('hidden');
+    setTimeout(() => {
+      popup.classList.add('hidden');
+    }, 2000);
+    setTimeout(() => {
+      popup.remove();
+    }, 3000);
     const interval = setInterval(() => {
         if (closeWarning()) {
             clearInterval(interval); // Stop once clicked
