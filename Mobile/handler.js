@@ -76,9 +76,6 @@ window.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
       popup.classList.add('hidden');
     }, 2000);
-    setTimeout(() => {
-      popup.remove();
-    }, 3000);
     const interval = setInterval(() => {
         if (closeWarning()) {
             clearInterval(interval); // Stop once clicked
