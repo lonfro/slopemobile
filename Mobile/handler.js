@@ -78,6 +78,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
     setTimeout(() => {
       popup.classList.add('hidden');
+      setTimeout(() => {
+        popup.remove();
+      }, 3000);
     }, 2000);
 
     const interval = setInterval(() => {
