@@ -85,6 +85,9 @@ window.addEventListener('DOMContentLoaded', () => {
             clearInterval(interval); // Stop once clicked
         }
     }, 500);
+    setTimeout(() => {
+        clearInterval(interval); // Stop after 10 seconds
+    }, 10000);
 });
 
 gameElement.addEventListener('touchstart', (event) => {
